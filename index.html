@@ -43,9 +43,16 @@ body { font-family: 'DM Sans', sans-serif; background: #060608; color: #e8e4dc; 
 .mopt { flex: 1; padding: 8px 4px; border-radius: 6px; font-size: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; border: 1px solid #1a1a28; background: transparent; color: #555; }
 .mopt.on { border-color: #b8f090; background: #182814; color: #b8f090; }
 textarea.inp { resize: none; height: 60px; }
+
+#dbg { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,.92); color: #b8f090; font-size: 11px; padding: 8px 12px; z-index: 9999; max-height: 40vh; overflow-y: auto; display: none; font-family: monospace; }
+#dbg-toggle { position: fixed; top: 4px; right: 4px; z-index: 10000; background: #f09090; color: #000; border: none; border-radius: 6px; padding: 4px 8px; font-size: 10px; cursor: pointer; }
+
 </style>
 </head>
 <body>
+
+<div id="dbg"></div>
+<button id="dbg-toggle">DEBUG</button>
 
 <div class="hdr">
   <div>
@@ -314,6 +321,42 @@ textarea.inp { resize: none; height: 60px; }
 </div>
 
 <script>
+
+// DEBUG PANEL
+var dbgEl = document.getElementById('dbg');
+var dbgOn = false;
+document.getElementById('dbg-toggle').addEventListener('touchend', function(e) {
+  e.preventDefault();
+  dbgOn = !dbgOn;
+  dbgEl.style.display = dbgOn ? 'block' : 'none';
+}, false);
+document.getElementById('dbg-toggle').addEventListener('click', function() {
+  dbgOn = !dbgOn;
+  dbgEl.style.display = dbgOn ? 'block' : 'none';
+}, false);
+
+function dbg(msg, color) {
+  var line = document.createElement('div');
+  line.style.color = color || '#b8f090';
+  line.textContent = new Date().toISOString().split('T')[1].split('.')[0] + ' ' + msg;
+  dbgEl.appendChild(line);
+  dbgEl.scrollTop = dbgEl.scrollHeight;
+}
+
+window.onerror = function(msg, src, line, col, err) {
+  dbg('ERROR: ' + msg + ' line:' + line, '#f09090');
+  dbgEl.style.display = 'block';
+  dbgOn = true;
+  return false;
+};
+
+window.addEventListener('unhandledrejection', function(e) {
+  dbg('PROMISE ERR: ' + e.reason, '#f09090');
+});
+
+dbg('script start');
+
+dbg('S init');
 var S = {
   get: function(k) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch(e) { return null; } },
   set: function(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
@@ -378,6 +421,7 @@ var MS  = {};
 var FM  = [];
 var TD  = null;
 
+dbg('flash fn defined');
 function flash(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg;
@@ -385,6 +429,7 @@ function flash(msg) {
   setTimeout(function() { t.classList.remove('show'); }, 2400);
 }
 
+dbg('tap fn defined');
 function tap(el, fn) {
   el.addEventListener('touchend', function(e) { e.preventDefault(); fn(); }, false);
   el.addEventListener('click', fn, false);
@@ -395,6 +440,7 @@ function tapId(id, fn) {
   if (el) tap(el, fn);
 }
 
+dbg('goTab fn defined');
 function goTab(id) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.ntab').forEach(function(b) { b.classList.remove('on'); });
@@ -844,7 +890,10 @@ document.getElementById(‘repcont’).innerHTML = h;
 document.getElementById(‘mod-rep’).style.display = ‘flex’;
 }
 
+dbg(‘binding load event’);
 window.addEventListener(‘load’, function() {
+dbg(‘load fired’);
+dbg(‘binding tabs’);
 document.querySelectorAll(’.ntab’).forEach(function(btn) {
 tap(btn, function() { goTab(btn.getAttribute(‘data-tab’)); });
 });
@@ -865,10 +914,15 @@ tapId(‘b-svm’,   svMeals);
 tapId(‘b-svd’,   svDiet);
 tapId(‘b-cd’,    function() { document.getElementById(‘mod-diet’).style.display = ‘none’; });
 tapId(‘b-crep’,  function() { document.getElementById(‘mod-rep’).style.display = ‘none’; });
+dbg(‘calling initMS’);
 initMS();
+dbg(‘calling rDash’);
 rDash();
+dbg(‘calling rWk’);
 rWk();
+dbg(‘calling rMeals’);
 rMeals();
+dbg(‘init complete’);
 });
 </script>
 
