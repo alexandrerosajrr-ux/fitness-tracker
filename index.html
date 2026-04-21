@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Fitness"/>
+<meta name="theme-color" content="#080810"/>
+<title>Fitness Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:#080810;color:#e8e4dc;min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:90px;padding-top:env(safe-area-inset-top);}
+input,textarea,button{font-family:'DM Sans',sans-serif;}
+.serif{font-family:'Playfair Display',serif;}
+.card{background:#10101c;border-radius:16px;padding:18px;border:1px solid #1c1c2e;margin-bottom:12px;}
+.label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#555;margin-bottom:8px;display:block;}
+.inp{background:#080810;border:1px solid #222238;border-radius:10px;padding:11px 14px;color:#e8e4dc;font-size:15px;outline:none;width:100%;}
+.inp::placeholder{color:#333;}
+.btn-green{background:#b8f090;color:#080810;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:14px;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;}
+.tab-btn{flex:1;padding:13px 0 11px;background:none;border:none;cursor:pointer;color:#444;font-family:'DM Sans',sans-serif;transition:color .2s;}
+.tab-btn.active{color:#b8f090;}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#0c0c18;border-top:1px solid #14142a;display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom);}
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#b8f090;color:#080810;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;z-index:100;white-space:nowrap;opacity:0;transition:opacity .3s;}
+.toast.show{opacity:1;}
+.page{display:none;padding:0 22px;}
+.page.active{display:block;}
+.header{padding:32px 22px 18px;border-bottom:1px solid #14142a;display:flex;justify-content:space-between;align-items:flex-start;}
+.stat-card{background:#10101c;border-radius:14px;padding:14px 8px;border:1px solid #1c1c2e;text-align:center;}
+.wk-btn{flex:1;padding:10px 4px;border-radius:10px;border:1px solid #1c1c2e;background:#10101c;color:#555;font-size:10px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.wk-btn.active{border-color:#b8f090;background:#182814;color:#b8f090;}
+.ex-card{background:#10101c;border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid #1c1c2e;}
+.meal-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #14142a;cursor:pointer;}
+.check-box{width:22px;height:22px;border-radius:7px;border:1.5px solid #2a2a44;display:flex;align-items:center;justify-content:center;color:#080810;font-size:13px;font-weight:700;transition:all .2s;flex-shrink:0;}
+.check-box.checked{background:#b8f090;border-color:#b8f090;}
+.history-card{background:#10101c;border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid #1c1c2e;}
+.pill{border-radius:8px;padding:4px 10px;font-size:11px;}
+textarea.inp{resize:none;height:72px;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+  <div>
+    <div class="serif" style="font-size:24px;color:#f0ece4;letter-spacing:-.3px;">Alexandre</div>
+    <div style="font-size:10px;color:#444;letter-spacing:.12em;text-transform:uppercase;margin-top:3px;">Lean Bulk · Meta 65 kg</div>
+  </div>
+  <div style="text-align:right;">
+    <div id="header-weight" style="font-size:30px;font-weight:300;color:#333;letter-spacing:-1px;">— <span style="font-size:14px;color:#555;">kg</span></div>
+    <div id="header-delta" style="font-size:10px;margin-top:2px;"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="page-dash" class="page active">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:20px;">
+    <div class="stat-card"><div id="stat-treinos" style="font-size:22px;font-weight:300;color:#b8f090;">—</div><div style="font-size:9px;color:#555;margin-top:5px;line-height:1.4;">Treinos 7d</div></div>
+    <div class="stat-card"><div id="stat-dieta" style="font-size:22px;font-weight:300;color:#b8f090;">—</div><div style="font-size:9px;color:#555;margin-top:5px;line-height:1.4;">Aderência dieta</div></div>
+    <div class="stat-card"><div id="stat-meta" style="font-size:22px;font-weight:300;color:#7dd3fc;">—</div><div style="font-size:9px;color:#555;margin-top:5px;line-height:1.4;">Falta meta</div></div>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <span class="label">Evolução peso — 30 dias</span>
+    <svg id="weight-chart" width="100%" viewBox="0 0 300 110" style="overflow:visible;">
+      <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b8f090" stop-opacity=".25"/><stop offset="100%" stop-color="#b8f090" stop-opacity="0"/></linearGradient></defs>
+      <text x="150" y="60" text-anchor="middle" font-size="12" fill="#333">Sem dados ainda</text>
+    </svg>
+  </div>
+
+  <div class="card">
+    <span class="label">Semana</span>
+    <div id="week-strip" style="display:flex;gap:6px;"></div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:4px;">
+    <button onclick="setTab('weight')" class="card" style="flex:1;margin-bottom:0;cursor:pointer;color:#e8e4dc;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 0;border:1px solid #1c1c2e;">
+      <span style="font-size:18px;">⚖</span>Peso
+    </button>
+    <button onclick="setTab('workout')" class="card" style="flex:1;margin-bottom:0;cursor:pointer;color:#e8e4dc;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 0;border:1px solid #1c1c2e;">
+      <span style="font-size:18px;">◉</span>Treino
+    </button>
+    <button onclick="setTab('meals')" class="card" style="flex:1;margin-bottom:0;cursor:pointer;color:#e8e4dc;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 0;border:1px solid #1c1c2e;">
+      <span style="font-size:18px;">◍</span>Dieta
+    </button>
+  </div>
+</div>
+
+<!-- WEIGHT -->
+
+<div id="page-weight" class="page">
+  <div style="margin-top:24px;margin-bottom:20px;">
+    <div class="serif" style="font-size:22px;">Peso do dia</div>
+    <div style="font-size:11px;color:#555;margin-top:4px;">Registre em jejum, pela manhã</div>
+  </div>
+  <div class="card">
+    <span class="label" id="weight-date-label">Hoje</span>
+    <div style="display:flex;gap:10px;">
+      <input id="weight-input" class="inp" placeholder="ex: 57.8" style="font-size:22px;font-weight:300;flex:1;" type="number" step="0.1" min="30" max="200"/>
+      <button onclick="saveWeight()" style="background:#b8f090;color:#080810;border:none;border-radius:10px;padding:0 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">Salvar</button>
+    </div>
+  </div>
+  <div class="card">
+    <span class="label">Histórico recente</span>
+    <div id="weight-history"></div>
+  </div>
+</div>
+
+<!-- WORKOUT -->
+
+<div id="page-workout" class="page">
+  <div style="margin-top:24px;margin-bottom:20px;">
+    <div class="serif" style="font-size:22px;">Treino de hoje</div>
+    <div style="font-size:11px;color:#555;margin-top:4px;">Exercícios, séries e cargas</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;" id="wk-type-btns">
+    <button class="wk-btn active" data-type="A" onclick="setWkType('A')"><div style="font-weight:700;font-size:15px;">A</div><div style="font-size:8px;line-height:1.2;margin-top:2px;">Peito &amp; Ombro</div></button>
+    <button class="wk-btn" data-type="B" onclick="setWkType('B')"><div style="font-weight:700;font-size:15px;">B</div><div style="font-size:8px;line-height:1.2;margin-top:2px;">Bíceps &amp; Costas</div></button>
+    <button class="wk-btn" data-type="C" onclick="setWkType('C')"><div style="font-weight:700;font-size:15px;">C</div><div style="font-size:8px;line-height:1.2;margin-top:2px;">Inferiores</div></button>
+    <button class="wk-btn" data-type="rest" onclick="setWkType('rest')"><div style="font-weight:700;font-size:15px;">—</div><div style="font-size:8px;line-height:1.2;margin-top:2px;">Descanso</div></button>
+  </div>
+  <div id="exercises-container"></div>
+  <div id="add-ex-btn-wrap">
+    <button onclick="addExercise()" style="width:100%;background:transparent;border:1px dashed #222238;border-radius:12px;padding:12px;color:#555;font-size:12px;cursor:pointer;margin-bottom:14px;font-family:'DM Sans',sans-serif;">+ Adicionar exercício</button>
+  </div>
+  <button class="btn-green" onclick="saveWorkout()">Salvar treino</button>
+</div>
+
+<!-- MEALS -->
+
+<div id="page-meals" class="page">
+  <div style="margin-top:24px;margin-bottom:20px;">
+    <div class="serif" style="font-size:22px;">Dieta de hoje</div>
+    <div style="font-size:11px;color:#555;margin-top:4px;">Marque as refeições realizadas</div>
+  </div>
+  <div class="card" id="meals-checklist"></div>
+  <div class="card">
+    <span class="label">Observações</span>
+    <textarea id="meal-notes" class="inp" placeholder="ex: jantar fora, substituí o feijão…"></textarea>
+  </div>
+  <button class="btn-green" onclick="saveMeals()">Salvar dieta</button>
+</div>
+
+<!-- HISTORY -->
+
+<div id="page-history" class="page">
+  <div style="margin-top:24px;margin-bottom:20px;">
+    <div class="serif" style="font-size:22px;">Log completo</div>
+    <div style="font-size:11px;color:#555;margin-top:4px;">Últimos 30 dias</div>
+  </div>
+  <div id="history-list"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+  <button class="tab-btn active" id="tab-dash" onclick="setTab('dash')">
+    <div style="font-size:16px;">◈</div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px;font-weight:600;">Início</div>
+  </button>
+  <button class="tab-btn" id="tab-weight" onclick="setTab('weight')">
+    <div style="font-size:16px;">⚖</div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">Peso</div>
+  </button>
+  <button class="tab-btn" id="tab-workout" onclick="setTab('workout')">
+    <div style="font-size:16px;">◉</div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">Treino</div>
+  </button>
+  <button class="tab-btn" id="tab-meals" onclick="setTab('meals')">
+    <div style="font-size:16px;">◍</div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">Dieta</div>
+  </button>
+  <button class="tab-btn" id="tab-history" onclick="setTab('history')">
+    <div style="font-size:16px;">≡</div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">Log</div>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Storage ──────────────────────────────────────────────────────
+const KEYS = { weights:'fit_weights', workouts:'fit_workouts', meals:'fit_meals' };
+function load(k){ try{ const r=localStorage.getItem(k); return r?JSON.parse(r):{}; }catch{return{};} }
+function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} }
+
+let weights=load(KEYS.weights), workouts=load(KEYS.workouts), meals=load(KEYS.meals);
+
+// ── Date helpers ──────────────────────────────────────────────────
+function todayStr(){ return new Date().toISOString().split('T')[0]; }
+function daysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; }
+function last(n){ return Array.from({length:n},(_,i)=>daysAgo(n-1-i)); }
+function fmt(d){ const [,m,dd]=d.split('-'); return `${dd}/${m}`; }
+
+const today = todayStr();
+
+// ── State ─────────────────────────────────────────────────────────
+let currentTab = 'dash';
+let wkType = 'A';
+let exercises = [{name:'',sets:'',reps:'',load:''}];
+const MEALS_LIST = ['Café da manhã','Almoço','Lanche da tarde','Jantar'];
+let mealChecks = Object.fromEntries(MEALS_LIST.map(m=>[m,false]));
+
+// Pre-fill today
+if(workouts[today]){ wkType=workouts[today].type||'A'; exercises=workouts[today].exercises&&workouts[today].exercises.length?workouts[today].exercises:[{name:'',sets:'',reps:'',load:''}]; }
+if(meals[today]){ mealChecks=meals[today].checks||mealChecks; }
+
+// ── Toast ─────────────────────────────────────────────────────────
+function flash(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
+
+// ── Tab navigation ────────────────────────────────────────────────
+function setTab(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  currentTab=id;
+  if(id==='dash') renderDash();
+  if(id==='weight') renderWeight();
+  if(id==='workout') renderWorkout();
+  if(id==='meals') renderMeals();
+  if(id==='history') renderHistory();
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────
+function renderDash(){
+  const l30=last(30), l7=last(7);
+  const wEntries=l30.filter(d=>weights[d]).map(d=>({d,v:weights[d]}));
+  const curW=wEntries.length?wEntries[wEntries.length-1].v:null;
+  const firstW=wEntries.length?wEntries[0].v:null;
+  const delta=curW&&firstW?(curW-firstW).toFixed(1):null;
+
+  // header
+  const hw=document.getElementById('header-weight');
+  hw.innerHTML=curW?`${curW} <span style="font-size:14px;color:#555;">kg</span>`:`<span style="color:#333;">—</span> <span style="font-size:14px;color:#555;">kg</span>`;
+  hw.style.color=curW?'#b8f090':'#333';
+  const hd=document.getElementById('header-delta');
+  if(delta!==null){ hd.textContent=`${parseFloat(delta)>=0?'+':''}${delta} kg (30d)`; hd.style.color=parseFloat(delta)>=0?'#b8f090':'#f09090'; }
+
+  // stats
+  const trained=l7.filter(d=>workouts[d]&&workouts[d].type!=='rest').length;
+  document.getElementById('stat-treinos').textContent=`${trained}/7`;
+  document.getElementById('stat-treinos').style.color=trained>=4?'#b8f090':'#f0b87a';
+
+  const mealPcts=l7.map(d=>{
+    if(!meals[d])return null;
+    const vals=Object.values(meals[d].checks||{});
+    return vals.length?vals.filter(Boolean).length/vals.length:null;
+  }).filter(v=>v!==null);
+  const avgM=mealPcts.length?Math.round(mealPcts.reduce((a,b)=>a+b,0)/mealPcts.length*100):null;
+  document.getElementById('stat-dieta').textContent=avgM!==null?`${avgM}%`:'—';
+  document.getElementById('stat-dieta').style.color=avgM!==null&&avgM>=75?'#b8f090':'#f0b87a';
+  document.getElementById('stat-meta').textContent=curW?`${(65-curW).toFixed(1)} kg`:'—';
+
+  // chart
+  renderChart(wEntries);
+
+  // week strip
+  const strip=document.getElementById('week-strip');
+  strip.innerHTML='';
+  l7.forEach(d=>{
+    const wk=workouts[d], isT=d===today;
+    const div=document.createElement('div');
+    div.style.cssText=`flex:1;text-align:center;`;
+    div.innerHTML=`
+      <div style="aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;
+        background:${wk&&wk.type!=='rest'?'#182814':'#10101c'};
+        border:1px solid ${isT?'#b8f090':'#1c1c2e'};
+        font-size:13px;font-weight:600;
+        color:${wk&&wk.type!=='rest'?'#b8f090':'#333'}">
+        ${wk?(wk.type==='rest'?'—':wk.type):'·'}
+      </div>
+      <div style="font-size:8px;color:#444;margin-top:3px;">${fmt(d)}</div>`;
+    strip.appendChild(div);
+  });
+}
+
+function renderChart(entries){
+  const svg=document.getElementById('weight-chart');
+  const W=300,H=110;
+  if(entries.length<2){ svg.innerHTML=`<text x="150" y="60" text-anchor="middle" font-size="12" fill="#333">Registre ao menos 2 pesos</text>`; return; }
+  const vals=entries.map(e=>e.v);
+  const minV=Math.min(...vals,57)-0.5, maxV=Math.max(...vals,65)+0.5;
+  const toX=i=>(i/(entries.length-1))*W;
+  const toY=v=>H-16-((v-minV)/(maxV-minV))*(H-28);
+  const pts=entries.map((e,i)=>`${toX(i)},${toY(e.v)}`).join(' ');
+  const goalY=toY(65);
+  svg.innerHTML=`
+    <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b8f090" stop-opacity=".25"/><stop offset="100%" stop-color="#b8f090" stop-opacity="0"/></linearGradient></defs>
+    <line x1="0" y1="${goalY}" x2="${W}" y2="${goalY}" stroke="#7dd3fc" stroke-width="1" stroke-dasharray="5,4" opacity=".5"/>
+    <text x="${W-2}" y="${goalY-4}" font-size="8" fill="#7dd3fc" text-anchor="end" opacity=".7">65 kg</text>
+    <polyline points="0,${H} ${pts} ${W},${H}" fill="url(#wg)" stroke="none"/>
+    <polyline points="${pts}" fill="none" stroke="#b8f090" stroke-width="2" stroke-linejoin="round"/>
+    ${entries.map((e,i)=>`<circle cx="${toX(i)}" cy="${toY(e.v)}" r="3" fill="#b8f090"/>`).join('')}
+    <text x="${toX(0)}" y="${H}" font-size="8" fill="#666" text-anchor="middle">${fmt(entries[0].d)}</text>
+    <text x="${toX(entries.length-1)}" y="${H}" font-size="8" fill="#666" text-anchor="middle">${fmt(entries[entries.length-1].d)}</text>`;
+}
+
+// ── Weight ────────────────────────────────────────────────────────
+function renderWeight(){
+  document.getElementById('weight-date-label').textContent=`Hoje — ${fmt(today)}`;
+  if(weights[today]) document.getElementById('weight-input').value=weights[today];
+  const hist=document.getElementById('weight-history');
+  const l30=last(30);
+  const entries=l30.filter(d=>weights[d]).map(d=>({d,v:weights[d]})).reverse().slice(0,10);
+  if(!entries.length){ hist.innerHTML=`<div style="color:#444;font-size:13px;">Nenhum registro ainda</div>`; return; }
+  hist.innerHTML=entries.map(e=>`
+    <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #14142a;">
+      <span style="color:#555;font-size:13px;">${fmt(e.d)}${e.d===today?'<span style="color:#b8f090;margin-left:6px;font-size:10px;">hoje</span>':''}</span>
+      <span style="font-weight:500;">${e.v} kg</span>
+    </div>`).join('');
+}
+
+function saveWeight(){
+  const v=parseFloat(document.getElementById('weight-input').value);
+  if(!v||v<30||v>200) return flash('Peso inválido');
+  weights[today]=v; save(KEYS.weights,weights);
+  flash('Peso salvo ✓'); renderWeight(); renderDash();
+}
+
+// ── Workout ───────────────────────────────────────────────────────
+function setWkType(t){
+  wkType=t;
+  document.querySelectorAll('.wk-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===t));
+  document.getElementById('exercises-container').style.display=t==='rest'?'none':'block';
+  document.getElementById('add-ex-btn-wrap').style.display=t==='rest'?'none':'block';
+}
+
+function renderWorkout(){
+  setWkType(wkType);
+  renderExercises();
+}
+
+function renderExercises(){
+  const c=document.getElementById('exercises-container');
+  c.innerHTML=exercises.map((ex,i)=>`
+    <div class="ex-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <input class="inp" value="${ex.name}" oninput="exercises[${i}].name=this.value" placeholder="Nome do exercício" style="font-size:14px;flex:1;"/>
+        ${exercises.length>1?`<button onclick="removeExercise(${i})" style="background:none;border:none;color:#444;cursor:pointer;font-size:18px;padding:0;line-height:1;">×</button>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        ${[['sets','Séries'],['reps','Reps'],['load','Carga kg']].map(([f,lb])=>`
+          <div>
+            <div class="label" style="margin-bottom:5px;">${lb}</div>
+            <input class="inp" value="${ex[f]}" oninput="exercises[${i}]['${f}']=this.value" placeholder="—" style="text-align:center;padding:9px 8px;"/>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function addExercise(){ exercises.push({name:'',sets:'',reps:'',load:''}); renderExercises(); }
+function removeExercise(i){ exercises.splice(i,1); renderExercises(); }
+
+function saveWorkout(){
+  const exs=exercises.filter(e=>e.name.trim());
+  workouts[today]={type:wkType,exercises:exs};
+  save(KEYS.workouts,workouts);
+  flash('Treino salvo ✓'); renderDash();
+}
+
+// ── Meals ─────────────────────────────────────────────────────────
+function renderMeals(){
+  if(meals[today]){ mealChecks=meals[today].checks||mealChecks; document.getElementById('meal-notes').value=meals[today].notes||''; }
+  const list=document.getElementById('meals-checklist');
+  list.innerHTML=MEALS_LIST.map(m=>`
+    <div class="meal-row" onclick="toggleMeal('${m}')">
+      <span style="font-size:14px;color:${mealChecks[m]?'#e8e4dc':'#555'};">${m}</span>
+      <div class="check-box ${mealChecks[m]?'checked':''}" id="check-${m.replace(/\s/g,'_')}">${mealChecks[m]?'✓':''}</div>
+    </div>`).join('');
+}
+
+function toggleMeal(m){
+  mealChecks[m]=!mealChecks[m];
+  renderMeals();
+}
+
+function saveMeals(){
+  meals[today]={checks:mealChecks,notes:document.getElementById('meal-notes').value};
+  save(KEYS.meals,meals);
+  flash('Dieta salva ✓'); renderDash();
+}
+
+// ── History ───────────────────────────────────────────────────────
+function renderHistory(){
+  const l30=last(30).reverse();
+  const list=document.getElementById('history-list');
+  const items=l30.filter(d=>weights[d]||workouts[d]||meals[d]);
+  if(!items.length){ list.innerHTML=`<div style="text-align:center;color:#444;padding:40px 0;">Nenhum registro ainda</div>`; return; }
+  list.innerHTML=items.map(d=>{
+    const w=weights[d], wk=workouts[d], ml=meals[d];
+    const mc=ml?Object.values(ml.checks||{}).filter(Boolean).length:0;
+    return `<div class="history-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:13px;font-weight:500;">${fmt(d)}${d===today?'<span style="color:#b8f090;font-size:9px;margin-left:6px;">hoje</span>':''}</span>
+        ${w?`<span style="font-size:20px;font-weight:300;color:#b8f090;">${w} kg</span>`:''}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${wk?`<span class="pill" style="background:${wk.type==='rest'?'#55555522':'#b8f09022'};color:${wk.type==='rest'?'#555':'#b8f090'};">${wk.type==='rest'?'Descanso':`Treino ${wk.type} · ${(wk.exercises||[]).filter(e=>e.name).length} ex.`}</span>`:''}
+        ${ml?`<span class="pill" style="background:${mc>=3?'#b8f09022':'#f0b87a22'};color:${mc>=3?'#b8f090':'#f0b87a'};">${mc}/4 refeições</span>`:''}
+      </div>
+      ${ml&&ml.notes?`<div style="font-size:11px;color:#555;margin-top:8px;">${ml.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+renderDash();
+renderWorkout();
+renderMeals();
+</script>
+
+</body>
+</html>
