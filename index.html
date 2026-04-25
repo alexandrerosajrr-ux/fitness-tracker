@@ -5,17 +5,19 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Alexandre"/>
 <meta name="theme-color" content="#060608"/>
 <title>Alexandre</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: sans-serif; background: #060608; color: #e8e4dc; max-width: 430px; margin: 0 auto; padding-bottom: 80px; }
-button { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; background: #b8f090; color: #060608; font-family: sans-serif; }
+button { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; background: #b8f090; color: #060608; font-family: sans-serif; -webkit-user-select: none; user-select: none; }
 .ghost { background: #0e0e16; color: #e8e4dc; border: 1px solid #1a1a28; font-weight: 400; }
-.purple { background: #c4b5fd; }
+.purple { background: #c4b5fd; color: #060608; }
 .sm { width: auto; padding: 10px 14px; font-size: 13px; margin: 0; }
 .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: #0a0a12; border-top: 1px solid #333; display: flex; z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
-.ntab { flex: 1; padding: 12px 0 10px; background: none; border: none; cursor: pointer; color: #444; font-size: 8px; text-transform: uppercase; font-family: sans-serif; }
+.ntab { flex: 1; padding: 12px 0 10px; background: none; border: none; cursor: pointer; color: #444; font-size: 8px; text-transform: uppercase; font-family: sans-serif; -webkit-user-select: none; user-select: none; }
 .ntab.on { color: #b8f090; }
 .page { display: none; padding: 0 16px; }
 .page.active { display: block; }
@@ -25,26 +27,29 @@ textarea { resize: none; height: 60px; }
 .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: #555; margin-bottom: 6px; display: block; }
 .toast { position: fixed; bottom: 75px; left: 50%; transform: translateX(-50%); background: #b8f090; color: #060608; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; z-index: 20; }
 .toast.show { opacity: 1; }
-.mopt { flex: 1; padding: 7px 4px; border-radius: 6px; font-size: 10px; cursor: pointer; font-family: sans-serif; border: 1px solid #1a1a28; background: transparent; color: #555; margin: 0; font-weight: 400; }
+.mopt { flex: 1; padding: 7px 4px; border-radius: 6px; font-size: 10px; cursor: pointer; font-family: sans-serif; border: 1px solid #1a1a28; background: transparent; color: #555; margin: 0; font-weight: 400; -webkit-user-select: none; user-select: none; }
 .mopt.on { border-color: #b8f090; background: #182814; color: #b8f090; }
-.wbt { flex: 1; padding: 10px 4px; border-radius: 10px; font-size: 9px; cursor: pointer; text-align: center; font-family: sans-serif; border: 1px solid #1a1a28; background: #0e0e16; color: #555; margin: 0; font-weight: 400; }
+.wbt { flex: 1; padding: 10px 4px; border-radius: 10px; font-size: 9px; cursor: pointer; text-align: center; font-family: sans-serif; border: 1px solid #1a1a28; background: #0e0e16; color: #555; margin: 0; font-weight: 400; -webkit-user-select: none; user-select: none; }
 .wbt.on { border-color: #b8f090; background: #182814; color: #b8f090; }
 .wbt.ron { border-color: #7dd3fc; background: #0c1f2e; color: #7dd3fc; }
 .wbt.don { border-color: #555; background: #1a1a1a; color: #555; }
-#errlog { background: #1a0000; border: 1px solid #f09090; border-radius: 10px; padding: 12px; margin: 10px 16px; font-size: 11px; color: #f09090; display: none; }
 </style>
 </head>
 <body>
-
-<div id="errlog"></div>
 
 <!-- DASHBOARD -->
 
 <div id="page-dash" class="page active">
   <div style="padding:24px 0 16px;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
-      <div><div style="font-size:22px;font-weight:600;color:#f0ece4;">Alexandre</div><div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.12em;margin-top:2px;">Lean Bulk · Meta 65kg</div></div>
-      <div style="text-align:right;"><div id="hw" style="font-size:26px;font-weight:300;color:#555;">-kg</div><div id="hd" style="font-size:10px;margin-top:1px;"></div></div>
+      <div>
+        <div style="font-size:22px;font-weight:600;color:#f0ece4;">Alexandre</div>
+        <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.12em;margin-top:2px;">Lean Bulk · Meta 65kg</div>
+      </div>
+      <div style="text-align:right;">
+        <div id="hw" style="font-size:26px;font-weight:300;color:#555;">-kg</div>
+        <div id="hd" style="font-size:10px;margin-top:1px;"></div>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
       <div class="card" style="margin:0;text-align:center;"><div id="ds-t" style="font-size:18px;font-weight:300;color:#b8f090;">-</div><div class="lbl" style="margin:4px 0 0;">Treinos 7d</div></div>
@@ -60,7 +65,7 @@ textarea { resize: none; height: 60px; }
       <div class="card" style="margin:0;"><span class="lbl">Sono hoje</span><div id="ds-sl" style="font-size:20px;font-weight:300;color:#c4b5fd;">-h</div></div>
       <div class="card" style="margin:0;"><span class="lbl">% Gordura</span><div id="ds-bf" style="font-size:20px;font-weight:300;color:#f0b87a;">-%</div></div>
     </div>
-    <button class="ghost" id="b-rep">Relatorio da semana</button>
+    <button id="b-rep" class="ghost">Relatorio da semana</button>
   </div>
 </div>
 
@@ -70,9 +75,15 @@ textarea { resize: none; height: 60px; }
   <div style="padding-top:24px;margin-bottom:16px;font-size:20px;font-weight:600;">Corpo e Sono</div>
   <div class="card">
     <span class="lbl" id="wlbl">Hoje</span>
-    <div style="display:flex;gap:8px;margin-bottom:14px;"><input id="winp" placeholder="Peso ex: 57.8" type="number" step="0.1" inputmode="decimal" style="font-size:20px;font-weight:300;flex:1;margin:0;"/><button class="sm" id="b-sw">Salvar</button></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <input id="winp" placeholder="Peso ex: 57.8" type="number" step="0.1" inputmode="decimal" style="font-size:20px;font-weight:300;flex:1;margin:0;"/>
+      <button class="sm" id="b-sw">Salvar</button>
+    </div>
     <span class="lbl">Horas de sono</span>
-    <div style="display:flex;gap:8px;"><input id="slinp" placeholder="ex: 7.5" type="number" step="0.5" inputmode="decimal" style="flex:1;margin:0;"/><button class="sm purple" id="b-ssl">Salvar</button></div>
+    <div style="display:flex;gap:8px;">
+      <input id="slinp" placeholder="ex: 7.5" type="number" step="0.5" inputmode="decimal" style="flex:1;margin:0;"/>
+      <button class="sm purple" id="b-ssl">Salvar</button>
+    </div>
   </div>
   <div class="card">
     <span class="lbl">Composicao Corporal</span>
@@ -142,7 +153,10 @@ textarea { resize: none; height: 60px; }
   <div class="card" id="mlist"></div>
   <div class="card">
     <span class="lbl">Refeicao livre</span>
-    <div style="display:flex;gap:8px;margin-bottom:10px;"><input id="fn" placeholder="ex: Hamburguer" style="flex:1;margin:0;"/><input id="fk" placeholder="kcal" type="number" inputmode="numeric" style="width:80px;margin:0;"/></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input id="fn" placeholder="ex: Hamburguer" style="flex:1;margin:0;"/>
+      <input id="fk" placeholder="kcal" type="number" inputmode="numeric" style="width:80px;margin:0;"/>
+    </div>
     <button class="ghost" id="b-af">+ Adicionar refeicao livre</button>
     <div id="flist" style="margin-top:8px;"></div>
   </div>
@@ -204,14 +218,6 @@ textarea { resize: none; height: 60px; }
 </div>
 
 <script>
-// Captura erros e mostra na tela
-window.onerror = function(msg, src, line) {
-  var el = document.getElementById('errlog');
-  el.style.display = 'block';
-  el.innerHTML += 'ERRO linha ' + line + ': ' + msg + '<br/>';
-  return false;
-};
-
 var S = {
   get: function(k) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch(e) { return null; } },
   set: function(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
@@ -284,8 +290,11 @@ function flash(m) {
 }
 
 function tap(el, fn) {
-  el.addEventListener('touchend', function(e) { e.preventDefault(); fn(); }, false);
-  el.addEventListener('click', fn, false);
+  el.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    fn();
+  }, { passive: false });
+  el.addEventListener('click', fn);
 }
 
 function tapId(id, fn) {
@@ -363,8 +372,7 @@ function rDash() {
   });
   var msgs = ['-', '-', '-', 'Abaixo do ideal', 'Boa semana!', 'Excelente!', 'Excelente!', 'Excelente!'];
   document.getElementById('wsum').textContent = msgs[Math.min(tr, 7)];
-  var sl = SL[TODAY];
-  document.getElementById('ds-sl').textContent = sl ? sl + 'h' : '-h';
+  document.getElementById('ds-sl').textContent = SL[TODAY] ? SL[TODAY] + 'h' : '-h';
   var bk = Object.keys(BC).sort();
   document.getElementById('ds-bf').textContent = (bk.length && BC[bk[bk.length - 1]].bf) ? BC[bk[bk.length - 1]].bf + '%' : '-%';
 }
@@ -461,7 +469,9 @@ function rEx() {
     h += '<div style="background:#060608;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #1a1a28;">';
     h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
     h += '<input class="exn" data-i="' + i + '" value="' + (ex.name || '') + '" placeholder="Exercicio" style="flex:1;background:#111;border:1px solid #333;border-radius:8px;padding:8px 10px;color:#e8e4dc;font-size:14px;outline:none;margin:0;"/>';
-    if (EX.length > 1) h += '<button class="rmex" data-i="' + i + '" style="background:none;border:none;color:#555;font-size:20px;padding:4px 8px;cursor:pointer;min-width:36px;min-height:44px;font-family:sans-serif;margin:0;">x</button>';
+    if (EX.length > 1) {
+      h += '<button class="rmex" data-i="' + i + '" style="background:none;border:none;color:#555;font-size:20px;padding:4px 8px;cursor:pointer;min-width:36px;min-height:44px;font-family:sans-serif;margin:0;">x</button>';
+    }
     h += '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">';
     h += '<div><div class="lbl">Series</div><input class="exs" data-i="' + i + '" value="' + (ex.sets || '') + '" placeholder="-" type="number" inputmode="numeric" style="text-align:center;padding:8px 4px;background:#111;border:1px solid #333;border-radius:8px;color:#e8e4dc;font-size:14px;outline:none;margin:0;width:100%;"/></div>';
@@ -495,7 +505,11 @@ function svWk() {
 }
 
 function svRun() {
-  WK[TODAY] = { type: 'run', exercises: [], dist: parseFloat(document.getElementById('rdist').value) || 0, runTime: parseInt(document.getElementById('rtime').value) || 0 };
+  WK[TODAY] = {
+    type: 'run', exercises: [],
+    dist: parseFloat(document.getElementById('rdist').value) || 0,
+    runTime: parseInt(document.getElementById('rtime').value) || 0
+  };
   S.set('fwk', WK); flash('Corrida salva'); rDash();
 }
 
@@ -513,7 +527,7 @@ function rML() {
     var ms = MS[m.id] || { done: false, optionIdx: 0 };
     var opt = m.options[ms.optionIdx || 0];
     h += '<div style="padding:12px 0;border-bottom:1px solid #1a1a28;">';
-    h += '<div class="mrow" data-id="' + m.id + '" style="display:flex;justify-content:space-between;align-items:center;padding:0 0 8px;cursor:pointer;min-height:44px;">';
+    h += '<div class="mrow" data-id="' + m.id + '" style="display:flex;justify-content:space-between;align-items:center;padding:0 0 8px;cursor:pointer;min-height:44px;-webkit-user-select:none;user-select:none;">';
     h += '<div><div style="font-size:15px;color:' + (ms.done ? '#e8e4dc' : '#555') + ';">' + m.name + '</div>';
     h += '<div style="font-size:10px;color:#555;margin-top:2px;">' + (opt ? opt.kcal : 0) + ' kcal</div></div>';
     h += '<div style="width:24px;height:24px;border-radius:6px;border:1.5px solid ' + (ms.done ? '#b8f090' : '#333') + ';background:' + (ms.done ? '#b8f090' : 'transparent') + ';display:flex;align-items:center;justify-content:center;color:#060608;font-size:13px;font-weight:700;flex-shrink:0;">' + (ms.done ? 'v' : '') + '</div></div>';
@@ -625,7 +639,8 @@ if (wE.length >= 2) {
 var vs = wE.map(function(e) { return e.v; });
 var mn = Math.min.apply(null, vs.concat([57])) - 0.8;
 var mx = Math.max.apply(null, vs.concat([65])) + 0.8;
-function tx(i) { return (i / (wE.length - 1)) * 320; }
+var len = wE.length;
+function tx(i) { return (i / (len - 1)) * 320; }
 function ty(v) { return 130 - 14 - ((v - mn) / (mx - mn)) * (130 - 24); }
 var pts = wE.map(function(e, i) { return tx(i) + ‘,’ + ty(e.v); }).join(’ ‘);
 var gy = ty(65);
